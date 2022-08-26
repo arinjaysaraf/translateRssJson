@@ -3,7 +3,9 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 import os
+import json
 from dotenv import load_dotenv 
+import requests
 
 
 load_dotenv()
@@ -23,9 +25,11 @@ app.add_middleware(
 
 class translationClass(BaseModel): 
     jsonData:dict
+    title: str
 
 @app.post("/")
 async def getTrans(translation:translationClass):
+    finalDict = {}
     res=""
     thumbnail = []
     for i in translation.jsonData:
@@ -46,9 +50,14 @@ async def getTrans(translation:translationClass):
     translatedLangs["img"] = thumbnail[1:]
     translator = Translator()
     for i in toLangs:
-        translatedLangs[i] = translator.translate(res, dest=i).text
+        translatedLangs[i] = json.dumps(translator.translate(res, dest=i).text)
     print(translatedLangs)
+    finalDict["thumbnail"] = thumbnail[0] or "https://ik.imagekit.io/sihassembly/sih-placeholder_cXgXA446y.png"
+    finalDict["content"] = translatedLangs
+    finalDict["slug"] = translation.title.lower().replace(" ", "-")
+    finalDict["categories"] = ["Ministry"]
 
+    requests.post('https://dsalgo.tech/article/create', json=finalDict);
 
     return [{"translatedLangs" : translatedLangs}]
 
