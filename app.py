@@ -27,6 +27,8 @@ class translationClass(BaseModel):
     jsonData:dict
     title: str
     createdAt:str
+    pib: str
+
 @app.post("/")
 async def getTrans(translation:translationClass):
     finalDict = {}
@@ -66,6 +68,7 @@ async def getTrans(translation:translationClass):
     finalDict["categories"] = ["Ministry"]
     finalDict["title"] = translation.title
     finalDict["createdAt"] = translation.createdAt
+    finalDict["pib"] = translation.pib
     print(finalDict)
     requests.post('http://localhost:5000/article/create', json=finalDict);
 
