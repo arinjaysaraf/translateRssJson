@@ -26,7 +26,7 @@ app.add_middleware(
 class translationClass(BaseModel): 
     jsonData:dict
     title: str
-
+    createdAt:str
 @app.post("/")
 async def getTrans(translation:translationClass):
     finalDict = {}
@@ -51,7 +51,7 @@ async def getTrans(translation:translationClass):
     if(len(thumbnail)>0):
         translatedLangs["thumbnail"] = thumbnail[0]
         if(len(thumbnail)>1):
-            translatedLangs["thumbnail"] = thumbnail[1:]
+            translatedLangs["thumbnail"] = thumbnail[0]
         translatedLangs["img"] = thumbnail[1:]
     else:
         translatedLangs["thumbnail"] = "https://ik.imagekit.io/sihassembly/sih-placeholder_cXgXA446y.png"
@@ -65,6 +65,7 @@ async def getTrans(translation:translationClass):
     finalDict["slug"] = translation.title.lower().replace(" ", "-")
     finalDict["categories"] = ["Ministry"]
     finalDict["title"] = translation.title
+    finalDict["createdAt"] = translation.createdAt
     print(finalDict)
     requests.post('http://localhost:5000/article/create', json=finalDict);
 
