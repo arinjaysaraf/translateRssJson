@@ -32,6 +32,8 @@ async def getTrans(translation:translationClass):
     finalDict = {}
     res=""
     thumbnail = []
+    print(translation.jsonData)
+    print(type(translation.jsonData))
     for i in translation.jsonData:
         print(translation.jsonData[i])
         print('\n')
@@ -43,22 +45,28 @@ async def getTrans(translation:translationClass):
         else:
             print(type(res))
             res += translation.jsonData[i] + '#$#'
-    print(res)
     
-    toLangs = ["hi","gu","kn","mr","ml","pa","ta","te","en"]
+    
     translatedLangs = {}
-    translatedLangs["thumbnail"] = thumbnail[0]
-    translatedLangs["img"] = thumbnail[1:]
+    if(len(thumbnail)>0):
+        translatedLangs["thumbnail"] = thumbnail[0]
+        if(len(thumbnail)>1):
+            translatedLangs["thumbnail"] = thumbnail[1:]
+        translatedLangs["img"] = thumbnail[1:]
+    else:
+        translatedLangs["thumbnail"] = "https://ik.imagekit.io/sihassembly/sih-placeholder_cXgXA446y.png"
     translator = Translator()
+    toLangs = ["hi","gu","kn","mr","ml","pa","ta","te","en"]
     for i in toLangs:
-        translatedLangs[i] = json.dumps(translator.translate(res, dest=i).text)
-    print(translatedLangs)
-    finalDict["thumbnail"] = thumbnail[0] or "https://ik.imagekit.io/sihassembly/sih-placeholder_cXgXA446y.png"
+        translatedLangs[i] = translator.translate(res, dest=i).text
+    finalDict["thumbnail"] = translatedLangs["thumbnail"]
+    del translatedLangs["thumbnail"]
     finalDict["content"] = translatedLangs
     finalDict["slug"] = translation.title.lower().replace(" ", "-")
     finalDict["categories"] = ["Ministry"]
-
-    requests.post('https://dsalgo.tech/article/create', json=finalDict);
+    finalDict["title"] = translation.title
+    print(finalDict)
+    requests.post('http://localhost:5000/article/create', json=finalDict);
 
     return [{"translatedLangs" : translatedLangs}]
 
