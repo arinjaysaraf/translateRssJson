@@ -41,6 +41,7 @@ async def getTrans(translation:translationClass):
         if "https" in translation.jsonData[i] :
             thumbnail.append(translation.jsonData[i]) 
         else:
+            print(type(res))
             res += translation.jsonData[i] + '#$#'
     print(res)
     
